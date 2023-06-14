@@ -4,6 +4,7 @@ import (
 	"agolang/project-3/entity"
 	"agolang/project-3/pkg/errs"
 	"agolang/project-3/repository/user_repository"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,12 +33,15 @@ func (a *authService) Authentication() gin.HandlerFunc {
 			return
 		}
 
+		fmt.Printf("%+v \n", user)
+
 		result, err := a.userRepo.GetUserById(user.Id)
 		if err != nil {
 			ctx.AbortWithStatusJSON(err.Status(), err)
 			return
 		}
-
+		fmt.Println("result", result)
+		//
 		ctx.Set("userData", result)
 		ctx.Next()
 	}

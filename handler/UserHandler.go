@@ -79,6 +79,7 @@ func (uh *userHandler) Login(ctx *gin.Context) {
 func (uh *userHandler) UpdateUser(ctx *gin.Context) {
 	var requestBody dto.UpdateUserRequest
 
+	//Mengambil data dario contex gin
 	userData, ok := ctx.MustGet("userData").(*entity.User)
 	if !ok {
 		newError := errs.NewBadRequest("Failed to get user data")
@@ -97,6 +98,25 @@ func (uh *userHandler) UpdateUser(ctx *gin.Context) {
 	}
 
 	result, err := uh.userService.UpdateUser(userData, &requestBody)
+	if err != nil {
+		ctx.JSON(err.Status(), err)
+		return
+	}
+
+	// Mengirim respons JSON dengan kode status dan hasil yang diterima dari userService.
+	ctx.JSON(result.StatusCode, result)
+
+}
+
+func (uh *userHandler) DeleteUser(ctx *gin.Context) {
+	userData, ok := ctx.MustGet("userData").(*entity.User)
+	if !ok {
+		newError := errs.NewBadRequest("Failed to get user data")
+		ctx.JSON(newError.Status(), newError)
+		return
+	}
+
+	result, err := uh.userService.DeleteUser(userData)
 	if err != nil {
 		ctx.JSON(err.Status(), err)
 		return

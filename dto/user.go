@@ -60,3 +60,17 @@ type UpdateUserResponse struct {
 }
 
 /////////////////////////////////
+
+type DeleteUserResponse struct {
+	StatusCode int    `json:"statusCode"`
+	Message    string `json:"message"`
+}
+
+/////////////////////////////////
+
+// ?
+type UserData struct {
+	Id       int    `json:"id"`
+	Email    string `json:"email"`
+	FullName string `json:"full_name"`
+}

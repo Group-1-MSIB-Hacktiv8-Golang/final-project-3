@@ -9,5 +9,6 @@ type UserRepository interface {
 	CreateNewUser(payload entity.User) (*entity.User, errs.MessageErr)
 	GetUserById(userId int) (*entity.User, errs.MessageErr)
 	GetUserByEmail(userEmail string) (*entity.User, errs.MessageErr)
-	UpdateUser(oldUser *entity.User, newUser *entity.User) (*entity.User, errs.MessageErr)
+	UpdateUser(newUser *entity.User, userId int) (*entity.User, errs.MessageErr)
+	DeleteUser(userId int) errs.MessageErr
 }

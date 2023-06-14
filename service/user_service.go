@@ -13,6 +13,7 @@ type UserService interface {
 	CreateNewUser(payload dto.NewUserRequest) (*dto.NewUserResponse, errs.MessageErr)
 	Login(loginUserRequest dto.LoginUserRequest) (*dto.LoginUserResponse, errs.MessageErr)
 	UpdateUser(user *entity.User, payload *dto.UpdateUserRequest) (*dto.UpdateUserResponse, errs.MessageErr)
+	DeleteUser(user *entity.User) (*dto.DeleteUserResponse, errs.MessageErr)
 }
 
 type userService struct {
@@ -102,16 +103,30 @@ func (u *userService) UpdateUser(user *entity.User, payload *dto.UpdateUserReque
 
 	newUser := payload.ToEntity()
 
-	updatedUser, err := u.userRepo.UpdateUser(user, newUser)
+	updatedUser, err := u.userRepo.UpdateUser(newUser, user.Id)
 	if err != nil {
 		return nil, err
 	}
 
 	response := &dto.UpdateUserResponse{
-		Id:        updatedUser.Id,
-		FullName:  updatedUser.FullName,
-		Email:     updatedUser.Email,
-		UpdatedAt: updatedUser.UpdatedAt,
+		StatusCode: http.StatusOK,
+		Id:         updatedUser.Id,
+		FullName:   updatedUser.FullName,
+		Email:      updatedUser.Email,
+		UpdatedAt:  updatedUser.UpdatedAt,
+	}
+
+	return response, nil
+}
+
+func (u *userService) DeleteUser(user *entity.User) (*dto.DeleteUserResponse, errs.MessageErr) {
+	if err := u.userRepo.DeleteUser(user.Id); err != nil {
+		return nil, err
+	}
+
+	response := &dto.DeleteUserResponse{
+		StatusCode: http.StatusOK,
+		Message:    "Your account has been succesfully deleted",
 	}
 
 	return response, nil

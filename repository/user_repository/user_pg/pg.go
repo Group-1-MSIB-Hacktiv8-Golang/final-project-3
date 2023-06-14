@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 )
 
 const (
@@ -33,9 +34,14 @@ const (
 	updateUserQuery = `
 		UPDATE "user"
 		SET full_name = $2,
-		email = $3
+		email = $3,
+		updated_at = $4
 		WHERE id = $1
-		RETURNING id, full_name, email, updated_at;
+		RETURNING id, full_name, email, updated_at
+	`
+	deleteUserQuery = `
+		DELETE FROM "user"
+		WHERE id = $1;
 	`
 )
 
@@ -68,10 +74,11 @@ func (u *userPG) CreateNewUser(payload entity.User) (*entity.User, errs.MessageE
 func (u *userPG) GetUserById(userId int) (*entity.User, errs.MessageErr) {
 	var user entity.User
 
+	fmt.Println(userId)
 	row := u.db.QueryRow(retrieveUserById, userId)
 
 	err := row.Scan(&user.Id, &user.Email, &user.Password)
-
+	fmt.Println("Ini error get userid by id repo", err)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
 			return nil, errs.NewNotFoundError("user not found")
@@ -112,7 +119,11 @@ func (u *userPG) GetUserByEmail(userEmail string) (*entity.User, errs.MessageErr
 	return &user, nil
 }
 
-func (u *userPG) UpdateUser(user *entity.User, payload *entity.User) (*entity.User, errs.MessageErr) {
+func (u *userPG) UpdateUser(payload *entity.User, userId int) (*entity.User, errs.MessageErr) {
+
+	var user entity.User
+
+	payload.UpdatedAt = time.Now()
 
 	tx, err := u.db.Begin()
 
@@ -120,15 +131,14 @@ func (u *userPG) UpdateUser(user *entity.User, payload *entity.User) (*entity.Us
 		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
-	row := tx.QueryRow(updateUserQuery, payload.Id, payload.FullName, payload.Email)
+	row := tx.QueryRow(updateUserQuery, userId, payload.FullName, payload.Email, payload.UpdatedAt)
 
-	err = row.Scan(&user.Id, &user.FullName, &user.Email, &user.Password)
-
+	err = row.Scan(&user.Id, &user.FullName, &user.Email, &user.UpdatedAt)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
-			return nil, errs.NewNotFoundError(fmt.Errorf("user not found: %w", err).Error())
+			return nil, errs.NewNotFoundError("user not found")
 		}
-		return nil, errs.NewInternalServerError(fmt.Errorf("failed to update user: %w", err).Error())
+		return nil, errs.NewInternalServerError("failed to update user")
 	}
 
 	err = tx.Commit()
@@ -138,5 +148,19 @@ func (u *userPG) UpdateUser(user *entity.User, payload *entity.User) (*entity.Us
 		return nil, errs.NewInternalServerError("something went wrong")
 	}
 
-	return user, nil
+	return &user, nil
+}
+
+func (u *userPG) DeleteUser(userId int) errs.MessageErr {
+
+	_, err := u.db.Exec(deleteUserQuery, userId)
+
+	if err != nil {
+		if errors.Is(sql.ErrNoRows, err) {
+			return errs.NewNotFoundError("user not found")
+		}
+		return errs.NewInternalServerError("failed to update user")
+	}
+
+	return nil
 }
