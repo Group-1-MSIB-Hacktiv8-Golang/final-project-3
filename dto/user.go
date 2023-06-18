@@ -9,23 +9,22 @@ import (
 
 type NewUserRequest struct {
 	FullName string `json:"full_name" valid:"required~full_name cannot be empty"`
-	Email    string `json:"email" valid:"required~email cannot be empty"`
+	Email    string `json:"email" valid:"required~email cannot be empty,email~email must be a valid email"`
 	Password string `json:"password" valid:"required~password cannot be empty"`
 }
 
 type NewUserResponse struct {
-	StatusCode int       `json:"statusCode"`
-	Id         int       `json:"id"`
-	FullName   string    `json:"full_name"`
-	Email      string    `json:"email"`
-	CreatedAt  time.Time `json:"created_at"`
+	Id        int       `json:"id"`
+	FullName  string    `json:"full_name"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 /////////////////////////////////
 
 type LoginUserRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" valid:"required~email cannot be empty,email~email must be a valid email"`
+	Password string `json:"password" valid:"required~password cannot be empty"`
 }
 
 type TokenResponse struct {
@@ -33,15 +32,14 @@ type TokenResponse struct {
 }
 
 type LoginUserResponse struct {
-	StatusCode int           `json:"statusCode"`
-	Data       TokenResponse `json:"data"`
+	Token string `json:"token"`
 }
 
 /////////////////////////////////
 
 type UpdateUserRequest struct {
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
+	FullName string `json:"full_name" valid:"required~full_name cannot be empty"`
+	Email    string `json:"email" valid:"required~email cannot be empty,email~email must be a valid email"`
 }
 
 func (r *UpdateUserRequest) ToEntity() *entity.User {
@@ -52,18 +50,16 @@ func (r *UpdateUserRequest) ToEntity() *entity.User {
 }
 
 type UpdateUserResponse struct {
-	StatusCode int       `json:"statusCode"`
-	Id         int       `json:"id"`
-	FullName   string    `json:"full_name"`
-	Email      string    `json:"email"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	Id        int       `json:"id"`
+	FullName  string    `json:"full_name"`
+	Email     string    `json:"email"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 /////////////////////////////////
 
 type DeleteUserResponse struct {
-	StatusCode int    `json:"statusCode"`
-	Message    string `json:"message"`
+	Message string `json:"message"`
 }
 
 /////////////////////////////////

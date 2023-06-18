@@ -5,6 +5,7 @@ import (
 	"agolang/project-3/entity"
 	"agolang/project-3/pkg/errs"
 	"agolang/project-3/service"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,7 +47,7 @@ func (uh *userHandler) Register(ctx *gin.Context) {
 	}
 
 	// Mengirim respons JSON dengan kode status dan hasil yang diterima dari userService.
-	ctx.JSON(result.StatusCode, result)
+	ctx.JSON(http.StatusCreated, result)
 }
 
 // Login digunakan untuk menangani permintaan login pengguna.
@@ -73,7 +74,7 @@ func (uh *userHandler) Login(ctx *gin.Context) {
 	}
 
 	// Mengirim respons JSON dengan kode status dan hasil yang diterima dari userService.
-	ctx.JSON(result.StatusCode, result)
+	ctx.JSON(http.StatusOK, result)
 }
 
 func (uh *userHandler) UpdateUser(ctx *gin.Context) {
@@ -104,7 +105,7 @@ func (uh *userHandler) UpdateUser(ctx *gin.Context) {
 	}
 
 	// Mengirim respons JSON dengan kode status dan hasil yang diterima dari userService.
-	ctx.JSON(result.StatusCode, result)
+	ctx.JSON(http.StatusOK, result)
 
 }
 
@@ -123,6 +124,6 @@ func (uh *userHandler) DeleteUser(ctx *gin.Context) {
 	}
 
 	// Mengirim respons JSON dengan kode status dan hasil yang diterima dari userService.
-	ctx.JSON(result.StatusCode, result)
+	ctx.JSON(http.StatusOK, result)
 
 }

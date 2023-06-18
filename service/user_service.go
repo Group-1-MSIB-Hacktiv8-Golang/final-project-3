@@ -33,6 +33,10 @@ func (u *userService) CreateNewUser(payload dto.NewUserRequest) (*dto.NewUserRes
 		return nil, err
 	}
 
+	if len(payload.Password) < 6 {
+		return nil, errs.NewInternalServerError("Password cant be less then 6")
+	}
+
 	user := entity.User{
 		FullName: payload.FullName,
 		Email:    payload.Email,
@@ -55,11 +59,10 @@ func (u *userService) CreateNewUser(payload dto.NewUserRequest) (*dto.NewUserRes
 	}
 
 	response := dto.NewUserResponse{
-		StatusCode: http.StatusCreated,
-		Id:         entityUser.Id,
-		FullName:   entityUser.FullName,
-		Email:      entityUser.Email,
-		CreatedAt:  entityUser.CreatedAt,
+		Id:        entityUser.Id,
+		FullName:  entityUser.FullName,
+		Email:     entityUser.Email,
+		CreatedAt: entityUser.CreatedAt,
 	}
 
 	return &response, nil
@@ -90,10 +93,7 @@ func (u *userService) Login(loginUserRequest dto.LoginUserRequest) (*dto.LoginUs
 	token := user.GenerateToken()
 
 	response := dto.LoginUserResponse{
-		StatusCode: http.StatusOK,
-		Data: dto.TokenResponse{
-			Token: token,
-		},
+		Token: token,
 	}
 
 	return &response, nil
@@ -109,11 +109,10 @@ func (u *userService) UpdateUser(user *entity.User, payload *dto.UpdateUserReque
 	}
 
 	response := &dto.UpdateUserResponse{
-		StatusCode: http.StatusOK,
-		Id:         updatedUser.Id,
-		FullName:   updatedUser.FullName,
-		Email:      updatedUser.Email,
-		UpdatedAt:  updatedUser.UpdatedAt,
+		Id:        updatedUser.Id,
+		FullName:  updatedUser.FullName,
+		Email:     updatedUser.Email,
+		UpdatedAt: updatedUser.UpdatedAt,
 	}
 
 	return response, nil
@@ -125,8 +124,7 @@ func (u *userService) DeleteUser(user *entity.User) (*dto.DeleteUserResponse, er
 	}
 
 	response := &dto.DeleteUserResponse{
-		StatusCode: http.StatusOK,
-		Message:    "Your account has been succesfully deleted",
+		Message: "Your account has been succesfully deleted",
 	}
 
 	return response, nil

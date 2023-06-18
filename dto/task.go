@@ -21,9 +21,9 @@ type TaskData struct {
 /////////////////////////////////
 
 type NewTaskRequest struct {
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description" binding:"required"`
-	CategoryId  int    `json:"category_id" `
+	Title       string `json:"title" valid:"required~title cannot be empty"`
+	Description string `json:"description" valid:"required~description cannot be empty"`
+	CategoryId  int    `json:"category_id" valid:"required~categoryId cannot be empty"`
 }
 
 func (t *NewTaskRequest) ToEntity() *entity.Task {
@@ -60,8 +60,8 @@ type GetAllTasksResponse struct {
 /////////////////////////////////
 
 type UpdateTaskRequest struct {
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description" binding:"required"`
+	Title       string `json:"title" valid:"required~title cannot be empty"`
+	Description string `json:"description" valid:"required~description cannot be empty"`
 }
 
 func (t *UpdateTaskRequest) ToEntity() *entity.Task {
@@ -84,13 +84,19 @@ type UpdateTaskResponse struct {
 /////////////////////////////////
 
 type UpdateTaskStatusRequest struct {
-	Status bool `json:"status"`
+	Status bool `json:"status" valid:"required~status cannot be empty"`
+}
+
+func (t *UpdateTaskStatusRequest) ToEntity() *entity.Task {
+	return &entity.Task{
+		Status: t.Status,
+	}
 }
 
 /////////////////////////////////
 
 type UpdateTaskCategoryRequest struct {
-	CategoryId int `json:"category_id"`
+	CategoryId int `json:"categoryId" valid:"required~categoryId cannot be empty"`
 }
 
 /////////////////////////////////

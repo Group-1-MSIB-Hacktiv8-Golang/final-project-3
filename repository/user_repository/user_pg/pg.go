@@ -6,7 +6,6 @@ import (
 	"agolang/project-3/repository/user_repository"
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -28,7 +27,7 @@ const (
 		WHERE email = $1;
 	`
 	retrieveUserById = `
-		SELECT id, email, password from "user"
+		SELECT id, full_name, email, password, role, created_at, updated_at from "user"
 		WHERE id = $1;
 	`
 	updateUserQuery = `
@@ -56,16 +55,16 @@ func NewUserPG(db *sql.DB) user_repository.UserRepository {
 }
 
 func (u *userPG) CreateNewUser(payload entity.User) (*entity.User, errs.MessageErr) {
-	role := "member"
+	payload.Role = "member"
 
 	var user entity.User
 
-	row := u.db.QueryRow(createNewUser, payload.FullName, payload.Email, payload.Password, role)
+	row := u.db.QueryRow(createNewUser, payload.FullName, payload.Email, payload.Password, payload.Role)
 
 	err := row.Scan(&user.Id, &user.FullName, &user.Email, &user.CreatedAt)
 
 	if err != nil {
-		return nil, errs.NewInternalServerError(fmt.Errorf("failed to create new user: %w", err).Error())
+		return nil, errs.NewInternalServerError("Email has been used")
 	}
 
 	return &user, nil
@@ -74,16 +73,14 @@ func (u *userPG) CreateNewUser(payload entity.User) (*entity.User, errs.MessageE
 func (u *userPG) GetUserById(userId int) (*entity.User, errs.MessageErr) {
 	var user entity.User
 
-	fmt.Println(userId)
 	row := u.db.QueryRow(retrieveUserById, userId)
 
-	err := row.Scan(&user.Id, &user.Email, &user.Password)
-	fmt.Println("Ini error get userid by id repo", err)
+	err := row.Scan(&user.Id, &user.FullName, &user.Email, &user.Password, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
-			return nil, errs.NewNotFoundError("user not found")
+			return nil, errs.NewNotFoundError("User not found")
 		}
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("Something went wrong")
 	}
 
 	return &user, nil
@@ -95,7 +92,7 @@ func (u *userPG) GetUserByEmail(userEmail string) (*entity.User, errs.MessageErr
 	tx, err := u.db.Begin()
 
 	if err != nil {
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("Something went wrong")
 	}
 
 	row := tx.QueryRow(retrieveUserByEmail, userEmail)
@@ -104,16 +101,16 @@ func (u *userPG) GetUserByEmail(userEmail string) (*entity.User, errs.MessageErr
 
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
-			return nil, errs.NewNotFoundError("user not found")
+			return nil, errs.NewNotFoundError("User not found")
 		}
-		return nil, errs.NewInternalServerError(fmt.Errorf("failed to create new user: %w", err).Error())
+		return nil, errs.NewInternalServerError("Failed to create new user")
 	}
 
 	err = tx.Commit()
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("Something went wrong")
 	}
 
 	return &user, nil
@@ -128,7 +125,7 @@ func (u *userPG) UpdateUser(payload *entity.User, userId int) (*entity.User, err
 	tx, err := u.db.Begin()
 
 	if err != nil {
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("Something went wrong")
 	}
 
 	row := tx.QueryRow(updateUserQuery, userId, payload.FullName, payload.Email, payload.UpdatedAt)
@@ -136,16 +133,16 @@ func (u *userPG) UpdateUser(payload *entity.User, userId int) (*entity.User, err
 	err = row.Scan(&user.Id, &user.FullName, &user.Email, &user.UpdatedAt)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
-			return nil, errs.NewNotFoundError("user not found")
+			return nil, errs.NewNotFoundError("User not found")
 		}
-		return nil, errs.NewInternalServerError("failed to update user")
+		return nil, errs.NewInternalServerError("Failed to update user")
 	}
 
 	err = tx.Commit()
 
 	if err != nil {
 		tx.Rollback()
-		return nil, errs.NewInternalServerError("something went wrong")
+		return nil, errs.NewInternalServerError("Something went wrong")
 	}
 
 	return &user, nil
@@ -157,9 +154,9 @@ func (u *userPG) DeleteUser(userId int) errs.MessageErr {
 
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
-			return errs.NewNotFoundError("user not found")
+			return errs.NewNotFoundError("User not found")
 		}
-		return errs.NewInternalServerError("failed to update user")
+		return errs.NewInternalServerError("Failed to delete user")
 	}
 
 	return nil
