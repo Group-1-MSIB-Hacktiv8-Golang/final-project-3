@@ -158,7 +158,7 @@ func (t *taskPG) UpdateTaskStatus(oldTask *entity.Task, newTask *entity.Task) (*
 
 	oldTask.Status = newTask.Status
 
-	row := t.db.QueryRow(updateTask, oldTask.Id, oldTask.Status, oldTask.UpdatedAt)
+	row := t.db.QueryRow(UpdateTaskStatus, oldTask.Id, oldTask.Status, oldTask.UpdatedAt)
 
 	err := row.Scan(&oldTask.Id, &oldTask.Title, &oldTask.Description, &oldTask.Status, &oldTask.UserId, &oldTask.CategoryId, &oldTask.UpdatedAt)
 
@@ -181,7 +181,10 @@ func (t *taskPG) UpdateTaskCategory(id int, newCategoryId int) (*entity.Task, er
 
 	row := t.db.QueryRow(UpdateTaskCategory, task.Id, task.CategoryId, task.UpdatedAt)
 
+	fmt.Printf("%+v", task)
+
 	err := row.Scan(&task.Id, &task.Title, &task.Description, &task.Status, &task.UserId, &task.CategoryId, &task.UpdatedAt)
+	fmt.Println("err di update task", err)
 
 	if err != nil {
 		return nil, errs.NewNotFoundError("Failed to update task")

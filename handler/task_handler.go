@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -57,7 +56,7 @@ func (t *TaskHandler) GetAllTasks(ctx *gin.Context) {
 
 func (t *TaskHandler) UpdateTask(ctx *gin.Context) {
 	taskId := ctx.Param("taskId")
-	taskIdInt, err := strconv.ParseUint(taskId, 10, 32)
+	taskIdInt, err := strconv.ParseInt(taskId, 10, 32)
 	if err != nil {
 		errValidation := errs.NewBadRequest("Task id should be in unsigned integer")
 		ctx.JSON(errValidation.Status(), errValidation)
@@ -82,7 +81,7 @@ func (t *TaskHandler) UpdateTask(ctx *gin.Context) {
 
 func (t *TaskHandler) UpdateTaskStatus(ctx *gin.Context) {
 	taskId := ctx.Param("taskId")
-	taskIdInt, err := strconv.ParseUint(taskId, 10, 32)
+	taskIdInt, err := strconv.ParseInt(taskId, 10, 32)
 	if err != nil {
 		errValidation := errs.NewBadRequest("Task id should be in unsigned integer")
 		ctx.JSON(errValidation.Status(), errValidation)
@@ -96,18 +95,14 @@ func (t *TaskHandler) UpdateTaskStatus(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println(int(taskIdInt))
-
 	response, err := t.taskService.UpdateTaskStatus(int(taskIdInt), &reqBody)
-
-	fmt.Println(response)
 
 	ctx.JSON(http.StatusOK, response)
 }
 
 func (t *TaskHandler) UpdateTaskCategory(ctx *gin.Context) {
 	taskId := ctx.Param("taskId")
-	taskIdInt, err := strconv.ParseUint(taskId, 10, 32)
+	taskIdInt, err := strconv.ParseInt(taskId, 10, 32)
 	if err != nil {
 		errValidation := errs.NewBadRequest("Task id should be in unsigned integer")
 		ctx.JSON(errValidation.Status(), errValidation)
@@ -132,7 +127,7 @@ func (t *TaskHandler) UpdateTaskCategory(ctx *gin.Context) {
 
 func (t *TaskHandler) DeleteTask(ctx *gin.Context) {
 	taskId := ctx.Param("taskId")
-	taskIdInt, err := strconv.ParseUint(taskId, 10, 32)
+	taskIdInt, err := strconv.ParseInt(taskId, 10, 32)
 	if err != nil {
 		newError := errs.NewBadRequest("Task id should be in unsigned integer")
 		ctx.JSON(newError.Status(), newError)

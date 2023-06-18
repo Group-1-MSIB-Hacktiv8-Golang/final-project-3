@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	host     = "localhost"
-	port     = "5432"
+	host     = "containers-us-west-122.railway.app"
+	port     = "7926"
 	user     = "postgres"
-	password = "Indhiro123"
-	dbname   = "kanban_board"
+	password = "bZA60fYIF0U0WCTxTYw7"
+	dbname   = "railway"
 	dialect  = "postgres"
 )
 

@@ -7,7 +7,6 @@ import (
 	"agolang/project-3/repository/category_repository"
 	"agolang/project-3/repository/task_repository"
 	"agolang/project-3/repository/user_repository"
-	"fmt"
 )
 
 type TaskService interface {
@@ -34,15 +33,13 @@ func (t *taskService) CreateTask(user *entity.User, payload *dto.NewTaskRequest)
 
 	_, err := t.categoryRepo.GetCategoryById(task.CategoryId)
 	if err != nil {
-		return nil, err
+		return nil, errs.NewNotFoundError("Failed to create task")
 	}
 
 	createdTask, err := t.taskRepo.CreateTask(user, task)
 	if err != nil {
-		return nil, err
+		return nil, errs.NewNotFoundError("Failed to create task")
 	}
-
-	// fmt.Println(createdTask)
 
 	response := &dto.NewTaskResponse{
 		Id:          createdTask.Id,
@@ -60,14 +57,14 @@ func (t *taskService) CreateTask(user *entity.User, payload *dto.NewTaskRequest)
 func (t *taskService) GetAllTasks() ([]dto.GetAllTasksResponse, errs.MessageErr) {
 	tasks, err := t.taskRepo.GetAllTasks()
 	if err != nil {
-		return nil, err
+		return nil, errs.NewNotFoundError("Failed to get all task")
 	}
 
 	response := []dto.GetAllTasksResponse{}
 	for _, task := range tasks {
 		user, err := t.userRepo.GetUserById(task.UserId)
 		if err != nil {
-			return nil, err
+			return nil, errs.NewNotFoundError("Failed to get all task")
 		}
 		response = append(response, dto.GetAllTasksResponse{
 			Id:          task.Id,
@@ -89,10 +86,10 @@ func (t *taskService) GetAllTasks() ([]dto.GetAllTasksResponse, errs.MessageErr)
 }
 
 func (t *taskService) UpdateTask(id int, payload *dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, errs.MessageErr) {
-	fmt.Println("id", id)
+
 	oldTask, err := t.taskRepo.GetTaskById(id)
 	if err != nil {
-		return nil, err
+		return nil, errs.NewNotFoundError("Failed to update task")
 	}
 
 	newTask := payload.ToEntity()
@@ -118,14 +115,14 @@ func (t *taskService) UpdateTask(id int, payload *dto.UpdateTaskRequest) (*dto.U
 func (t *taskService) UpdateTaskStatus(id int, payload *dto.UpdateTaskStatusRequest) (*dto.UpdateTaskResponse, errs.MessageErr) {
 	oldTask, err := t.taskRepo.GetTaskById(id)
 	if err != nil {
-		return nil, err
+		return nil, errs.NewNotFoundError("Failed to update status task")
 	}
 
 	newTask := payload.ToEntity()
 
 	updatedTask, err2 := t.taskRepo.UpdateTaskStatus(oldTask, newTask)
 	if err2 != nil {
-		return nil, errs.NewNotFoundError(fmt.Errorf("failed to create new task: %w", err).Error())
+		return nil, errs.NewNotFoundError("Failed to update status task")
 	}
 
 	response := &dto.UpdateTaskResponse{
@@ -137,20 +134,20 @@ func (t *taskService) UpdateTaskStatus(id int, payload *dto.UpdateTaskStatusRequ
 		CategoryId:  updatedTask.CategoryId,
 		UpdatedAt:   updatedTask.UpdatedAt,
 	}
-	fmt.Println(response)
 
 	return response, nil
 }
 
 func (t *taskService) UpdateTaskCategory(id int, payload *dto.UpdateTaskCategoryRequest) (*dto.UpdateTaskResponse, errs.MessageErr) {
 	_, err := t.categoryRepo.GetCategoryById(payload.CategoryId)
+
 	if err != nil {
-		return nil, err
+		return nil, errs.NewNotFoundError("Failed to update task category")
 	}
 
 	updatedCategory, err := t.taskRepo.UpdateTaskCategory(id, payload.CategoryId)
 	if err != nil {
-		return nil, err
+		return nil, errs.NewNotFoundError("Failed to update task category")
 	}
 
 	response := &dto.UpdateTaskResponse{
@@ -169,7 +166,7 @@ func (t *taskService) UpdateTaskCategory(id int, payload *dto.UpdateTaskCategory
 func (t *taskService) DeleteTask(id int) (*dto.DeleteTaskResponse, errs.MessageErr) {
 	err := t.taskRepo.DeleteTask(id)
 	if err != nil {
-		return nil, err
+		return nil, errs.NewNotFoundError("Failed to delete task")
 	}
 
 	response := &dto.DeleteTaskResponse{

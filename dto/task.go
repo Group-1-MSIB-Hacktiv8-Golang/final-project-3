@@ -96,7 +96,7 @@ func (t *UpdateTaskStatusRequest) ToEntity() *entity.Task {
 /////////////////////////////////
 
 type UpdateTaskCategoryRequest struct {
-	CategoryId int `json:"categoryId" valid:"required~categoryId cannot be empty"`
+	CategoryId int `json:"category_id" valid:"required~categoryId cannot be empty"`
 }
 
 /////////////////////////////////
