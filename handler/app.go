@@ -11,7 +11,7 @@ import (
 )
 
 func StartApp() {
-	var port = "8080"
+	// var port = "8080"
 	database.InitiliazeDatabase()
 
 	db := database.GetDatabaseInstance()
@@ -74,5 +74,5 @@ func StartApp() {
 		taskRoute.DELETE("/:taskId", authService.Authentication(), authService.TaskAuthorization(), taskHandler.DeleteTask)
 	}
 
-	route.Run(":" + port)
+	// route.Run(":" + port)
 }

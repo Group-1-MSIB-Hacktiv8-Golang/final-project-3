@@ -44,7 +44,6 @@ func (c *categoryService) CreateNewCategory(payload dto.NewCategoryRequest) (*dt
 
 	var entityCategory *entity.Category
 
-	//Memasukan data category kedalam table
 	entityCategory, err = c.categoryRepo.CreateCategory(category)
 
 	if err != nil {

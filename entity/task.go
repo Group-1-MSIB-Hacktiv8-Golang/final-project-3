@@ -14,15 +14,3 @@ type Task struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
-
-// func (i *Task) TaskToTaskRespon() dto.task {
-// 	return dto.ItemResponse{
-// 		Id:          i.ItemId,
-// 		ItemCode:    i.ItemCode,
-// 		Quantity:    i.Quantity,
-// 		Description: i.Description,
-// 		OrderId:     i.OrderId,
-// 		CreatedAt:   i.CreatedAt,
-// 		UpdatedAt:   i.UpdatedAt,
-// 	}
-// }

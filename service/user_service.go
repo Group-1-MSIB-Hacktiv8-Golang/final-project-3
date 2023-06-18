@@ -51,7 +51,6 @@ func (u *userService) CreateNewUser(payload dto.NewUserRequest) (*dto.NewUserRes
 
 	var entityUser *entity.User
 
-	//Memasukan data user kedalam table
 	entityUser, err = u.userRepo.CreateNewUser(user)
 
 	if err != nil {

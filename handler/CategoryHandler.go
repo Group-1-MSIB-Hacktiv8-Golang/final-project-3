@@ -23,12 +23,8 @@ func NewCategoryHandler(categoryService service.CategoryService) categoryHandler
 func (ch *categoryHandler) CreateCategory(ctx *gin.Context) {
 	var requestBody dto.NewCategoryRequest
 
-	// Membaca dan mengikat JSON permintaan ke struct requestBody.
 	if err := ctx.ShouldBindJSON(&requestBody); err != nil {
-		// Membuat kesalahan UnprocessableEntityError dengan pesan "invalid request body".
 		errBindJSON := errs.NewUnprocessibleEntityError("invalid request body")
-
-		// Mengirim respons JSON dengan kode status dan pesan kesalahan yang sesuai.
 		ctx.JSON(errBindJSON.Status(), errBindJSON)
 		return
 	}

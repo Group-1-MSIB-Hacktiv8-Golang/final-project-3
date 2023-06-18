@@ -44,7 +44,6 @@ func (a *authService) Authentication() gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(err.Status(), err)
 			return
 		}
-		//
 		ctx.Set("userData", result)
 		ctx.Next()
 	}
@@ -63,7 +62,6 @@ func (a *authService) AdminAuthorization() gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(newError.Status(), newError)
 			return
 		}
-
 		ctx.Next()
 	}
 }

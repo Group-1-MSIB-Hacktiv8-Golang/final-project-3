@@ -21,7 +21,6 @@ const (
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, full_name, email, created_at
 	`
-	//Dont forget "" at table name
 	retrieveUserByEmail = `
 		SELECT id, email, password from "user"
 		WHERE email = $1;

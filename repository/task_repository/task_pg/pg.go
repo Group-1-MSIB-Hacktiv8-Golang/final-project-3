@@ -3,7 +3,6 @@ package task_pg
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 
 	"agolang/project-3/entity"
@@ -106,7 +105,6 @@ func (t *taskPG) GetAllTasks() ([]entity.Task, errs.MessageErr) {
 		if err != nil {
 			return nil, errs.NewInternalServerError("Failed to get all task")
 		}
-		// return nil, errs.NewInternalServerError(fmt.Errorf("failed to create new task: %w", err).Error())
 
 		tasks = append(tasks, task)
 	}
@@ -163,7 +161,7 @@ func (t *taskPG) UpdateTaskStatus(oldTask *entity.Task, newTask *entity.Task) (*
 	err := row.Scan(&oldTask.Id, &oldTask.Title, &oldTask.Description, &oldTask.Status, &oldTask.UserId, &oldTask.CategoryId, &oldTask.UpdatedAt)
 
 	if err != nil {
-		return nil, errs.NewNotFoundError(fmt.Errorf("failed to create new task: %w", err).Error())
+		return nil, errs.NewNotFoundError("Failed to update status")
 	}
 
 	return oldTask, nil
@@ -181,10 +179,7 @@ func (t *taskPG) UpdateTaskCategory(id int, newCategoryId int) (*entity.Task, er
 
 	row := t.db.QueryRow(UpdateTaskCategory, task.Id, task.CategoryId, task.UpdatedAt)
 
-	fmt.Printf("%+v", task)
-
 	err := row.Scan(&task.Id, &task.Title, &task.Description, &task.Status, &task.UserId, &task.CategoryId, &task.UpdatedAt)
-	fmt.Println("err di update task", err)
 
 	if err != nil {
 		return nil, errs.NewNotFoundError("Failed to update task")

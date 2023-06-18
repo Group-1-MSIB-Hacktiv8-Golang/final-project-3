@@ -24,7 +24,6 @@ var (
 )
 
 func handleDatabaseConnection() {
-	//Dialect tidak di input
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname,
 	)
@@ -35,11 +34,6 @@ func handleDatabaseConnection() {
 		log.Panic("error occured while trying to validate database arguments:", err)
 	}
 }
-
-// type UpdateUserRequest struct {
-// 	Email    string `json:"email" valid:"required~email cannot be empty,email~email must be a valid email"`
-// 	Username string `json:"username" valid:"required~username cannot be empty"`
-// }
 
 func handleCreateRequiredTables() {
 	userTable := `
