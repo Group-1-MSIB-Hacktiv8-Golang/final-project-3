@@ -74,5 +74,5 @@ func StartApp() {
 		taskRoute.DELETE("/:taskId", authService.Authentication(), authService.TaskAuthorization(), taskHandler.DeleteTask)
 	}
 
-	// route.Run(":" + port)
+	route.Run()
 }
